@@ -65,7 +65,7 @@ You can also directly download our processed soft triples:
 ### The second stage
 In the second stage, you can use the generated soft triples to train SOTA neural approximate rule-based models.
 
-###LSTK-TELM
+#### LSTK-TELM
 
 Path for code: ``src/LSTK-TELM``
 
@@ -92,7 +92,7 @@ $ bash run_rules.sh [dataset]
 We also provide the runing scripts of baseline methods:
 
 
-###LSTK-NeuralLP and LSTK-DRUM
+#### LSTK-NeuralLP and LSTK-DRUM
 
 Path for code: ``src/LSTK-NeuralLP`` or ``src/LSTK-DRUM``
 
@@ -110,7 +110,7 @@ $ python eval/get_truths.py [dataset]
 $ python eval/evaluate.py --preds=exps/[dataset]/test_predictions.txt --truths=[dataset]/truths.pckl
 ```
 
-###LSTK-RNNLogic
+#### LSTK-RNNLogic
 
 Path for code: ``src/LSTK-RNNLogic``
 

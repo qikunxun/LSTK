@@ -72,22 +72,22 @@ Path for code: ``src/LSTK-TELM``
 
 The script for both training and evaluation on the HacRED dataset is:
 ```
-$ bash run_hacred.sh
+bash run_hacred.sh
 ```
 
 The script for both training and evaluation on the HacRED dataset is:
 ```
-$ bash run_docred.sh
+bash run_docred.sh
 ```
 
 The script for both training and evaluation on the BioRel dataset is:
 ```
-$ bash run_biorel.sh
+bash run_biorel.sh
 ```
 
 The script for rule extraction is:
 ```
-$ bash run_rules.sh [dataset]
+bash run_rules.sh [dataset]
 ```
 
 We also provide the runing scripts of baseline methods:
@@ -99,16 +99,16 @@ Path for code: ``src/LSTK-NeuralLP`` or ``src/LSTK-DRUM``
 
 The training script is:
 ```
-$ python python -u src/main.py --datadir=[dataset]/ --exp_name=[dataset] --num_step 4 --gpu 0 --exps_dir exps --max_epoch 100 --seed 1234
+python python -u src/main.py --datadir=[dataset]/ --exp_name=[dataset] --num_step 4 --gpu 0 --exps_dir exps --max_epoch 100 --seed 1234
 ```
 
 The evaluation script is:
 ```
-$ sh eval/collect_all_facts.sh [dataset]
+sh eval/collect_all_facts.sh [dataset]
 
-$ python eval/get_truths.py [dataset]
+python eval/get_truths.py [dataset]
 
-$ python eval/evaluate.py --preds=exps/[dataset]/test_predictions.txt --truths=[dataset]/truths.pckl
+python eval/evaluate.py --preds=exps/[dataset]/test_predictions.txt --truths=[dataset]/truths.pckl
 ```
 
 #### LSTK-RNNLogic
@@ -117,15 +117,15 @@ Path for code: ``src/LSTK-RNNLogic``
 
 The script for environment installation is:
 ```
-$ cd LSTK-RNNLogic/codes/pyrnnlogiclib/
-$ python setup.py install
+cd LSTK-RNNLogic/codes/pyrnnlogiclib/
+python setup.py install
 ```
 
 The script for data preparation is:
 ```
-$ python process_dicts.py
-$ python get_scores.py
-$ python process_soft.py
+python process_dicts.py
+python get_scores.py
+python process_soft.py
 ```
 
 The script for both training and evaluation is:

@@ -4,7 +4,7 @@
 
  * Python 3.8
  * pytorch==1.10.0
- * TensorFlow==1.15.0
+ * TensorFlow==1.15.0 (for LSTK-NeuralLP and LSTK-DRUM)
 
 
 ### Datasets

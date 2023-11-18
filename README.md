@@ -32,6 +32,7 @@ We use four models in our experiments.
 LSTK is a two-stage framework. In the first stage, it aims at generating a set of soft triples for reasoning.
 
 You can generate a set of soft triples by:
+
 0. Path for code: ``src_nli``
 
 1. training a textual entailment model:

@@ -44,7 +44,7 @@ $ python main_nli.py [dataset]
 ```
 $ python generate_triples_by_index.py [dataset]
 ```
-3. If the dataset is in Chinese, use:
+3. If the dataset is in Chinese, please use:
 ```
 $ python generate_triples_by_index_zh.py [dataset]
 ```

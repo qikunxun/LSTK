@@ -10,7 +10,7 @@
 ### Datasets
 We use three datasets in our experiments.
 
-| Datasets           | Download Links (original)         |
+| Dataset           | Download Link (original)         |
 |--------------------|-----------------------------------|
 | HacRED          | https://github.com/qiaojiim/HacRED   |
 | DocRED          | https://github.com/thunlp/DocRED     |
@@ -19,7 +19,7 @@ We use three datasets in our experiments.
 ### Models
 We use four models in our experiments.
 
-| Models             | Code Download Links (original)                  |
+| Model             | Code Download Link (original)                  |
 |--------------------|-------------------------------------------------|
 | NeuralLP           | https://github.com/fanyangxyz/Neural-LP         |
 | DRUM               | https://github.com/alisadeghian/DRUM            |
@@ -57,7 +57,7 @@ After the above process, you can get three files (train/valid/test_triple_scores
 
 You can also directly download our processed soft triples:
 
-| Datasets           | Download Links (processed)         |
+| Dataset           | Download Link (processed)         |
 |--------------------|------------------------------------|
 | HacRED             | [Google Drive](https://drive.google.com/file/d/1qpxhtaHXYqvE5mtpTG2cUEImMUI_YSrW/view?usp=sharing)    |
 | DocRED             | [Google Drive](https://drive.google.com/file/d/1rR_Ryr5qydT34XtF1plRRa6c4j5VjCD5/view?usp=sharing)    |

@@ -37,20 +37,20 @@ Path for code: ``src_nli``
 
 1. training a textual entailment model:
 ```
-$ python main_nli.py [dataset]
+python main_nli.py [dataset]
 ```
 
 2. Searching triples with corresponding texts:
 ```
-$ python generate_triples_by_index.py [dataset]
+python generate_triples_by_index.py [dataset]
 ```
 3. If the dataset is in Chinese, please use:
 ```
-$ python generate_triples_by_index_zh.py [dataset]
+python generate_triples_by_index_zh.py [dataset]
 ```
 4. Appling the trained textual entailment model to generate soft triples:
 ```
-$ python apply_model_nli.py [dataset]
+python apply_model_nli.py [dataset]
 ```
 
 After the above process, you can get three files (train/valid/test_triple_scores.txt) storing soft triples.

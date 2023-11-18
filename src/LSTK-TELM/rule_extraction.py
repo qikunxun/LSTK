@@ -4,20 +4,22 @@ import sys
 import torch
 import pickle as pkl
 from model import TELMModel
-from tqdm import tqdm
 
 beam_size = int(sys.argv[5])
+
 
 class Option(object):
     def __init__(self, path):
         with open(os.path.join(path, 'option.txt'), mode='r') as f:
             self.__dict__ = json.load(f)
 
+
 def reverse(x2id):
     id2x = {}
     for x in x2id:
         id2x[x2id[x]] = x
     return id2x
+
 
 def load_kg_form_pkl(file_path, target_relation):
     with open(file_path + 'kg_{}.pkl'.format(target_relation.replace('/', '|')), mode='rb') as fd:
@@ -28,7 +30,6 @@ def load_kg_form_pkl(file_path, target_relation):
         relation2id = pkl.load(fd)
 
     return kg, entity2id, relation2id
-
 
 
 def get_beam(indices, t, beam_size, r, T, all_indices):
@@ -43,16 +44,19 @@ def get_beam(indices, t, beam_size, r, T, all_indices):
 
     return beams
 
+
 def get_states(indices, scores):
     states = torch.zeros(indices.shape)
     for l in range(indices.shape[0]):
         states[l] = torch.index_select(scores[l], -1, indices[l])
     return states
 
+
 def transform_score(x, T):
     one = torch.autograd.Variable(torch.Tensor([1]))
     zero = torch.autograd.Variable(torch.Tensor([0]).detach())
     return torch.minimum(torch.maximum(x / T, zero), one)
+
 
 def analysis(id2relation, relation2id, flag, option, model_save_path):
     thr = 0.5
@@ -68,7 +72,6 @@ def analysis(id2relation, relation2id, flag, option, model_save_path):
     beta_ori = torch.sigmoid(model.beta[-1][flag])
     alpha = (alpha_ori >= thr).float()
     beta = (beta_ori >= thr).float()
-    atom_type = alpha * beta
     scores = torch.zeros(option.length, 2 * n + 1)
     for l in range(option.length):
         if alpha[l] == 0 and beta[l] == 0:
@@ -93,7 +96,6 @@ def analysis(id2relation, relation2id, flag, option, model_save_path):
         beta_ori = torch.sigmoid(model.beta[t][flag])
         alpha = (alpha_ori >= thr).float()
         beta = (beta_ori >= thr).float()
-        atom_type = alpha * beta
         scores = torch.zeros(option.length, 2 * n + 1)
         for l in range(option.length):
             if alpha[l] == 0 and beta[l] == 0:
@@ -176,11 +178,12 @@ def analysis(id2relation, relation2id, flag, option, model_save_path):
     if flag: flag_ = 'inv'
     fw = open('./{}/rules-{}-{}.txt'.format(option.exps_dir, option.target_relation.replace('/', '|'), flag_), mode='w')
     for i, ids in enumerate(ids_sort):
-        data = {'rank': (i + 1), 'id': int(ids), 'rules': all_rules[int(ids)], 'weight': float(torch.tanh(model.weight[int(ids)]))}
+        data = {'rank': (i + 1), 'id': int(ids), 'rules': all_rules[int(ids)],
+                'weight': float(torch.tanh(model.weight[int(ids)]))}
         fw.write(json.dumps(data, ensure_ascii=False) + '\n')
-        print('Rank: {}, id: {}, Weight: {}, Rule: {}'.format((i + 1), ids, float(torch.tanh(model.weight[int(ids)])), all_rules[int(ids)]))
+        print('Rank: {}, id: {}, Weight: {}, Rule: {}'.format((i + 1), ids, float(torch.tanh(model.weight[int(ids)])),
+                                                              all_rules[int(ids)]))
     fw.close()
-
 
 
 if __name__ == '__main__':

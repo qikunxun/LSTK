@@ -2,6 +2,7 @@ import os
 import numpy as np
 from tqdm import tqdm
 
+
 class Triple:
     def __init__(self, h, r, t):
         self.h = h
@@ -11,6 +12,7 @@ class Triple:
     def get_triple(self):
         return self.h, self.r, self.t
 
+
 class Dataset:
 
     def __init__(self, kg_path, batch_size, target_relation, negative_sampling=True, option=None):
@@ -19,7 +21,7 @@ class Dataset:
         self.batch_size = batch_size
         self.target_relation = target_relation
         self.kg, self.id2entity, self.entity2id, self.id2relation, self.relation2id, \
-                    self.train_kg_ori, self.train_kg_inv = self.load_kg_all(kg_path)
+        self.train_kg_ori, self.train_kg_inv = self.load_kg_all(kg_path)
         self.graph, self.graph_entity, self.relation_tail, self.relation_head = self.build_graph()
         self.targets_h = self.get_targets_head()
         self.targets_t = self.get_targets_tail()

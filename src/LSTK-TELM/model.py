@@ -41,7 +41,9 @@ class TELMModel(nn.Module):
             w_probs_h = torch.softmax(w_probs[:, :self.n], dim=-1)
             w_probs_s = torch.softmax(w_probs[:, self.n:], dim=-1)
             w_probs = torch.cat([w_probs_h * torch.unsqueeze(alpha, dim=-1),
-                                 w_probs_s * torch.unsqueeze(beta, dim=-1), 1 - self.activation(torch.unsqueeze(alpha, dim=-1) + torch.unsqueeze(beta, dim=-1))], dim=-1)
+                                 w_probs_s * torch.unsqueeze(beta, dim=-1),
+                                 1 - self.activation(torch.unsqueeze(alpha, dim=-1)
+                                                     + torch.unsqueeze(beta, dim=-1))], dim=-1)
             if t == 0:
                 w = w_probs
                 s_tmp = torch.sparse.mm(input, torch.permute(w, (1, 0))).view(len(entity2id), -1, self.L)

@@ -23,19 +23,24 @@ class Option(object):
         with open(os.path.join(path, 'option.txt'), mode='r') as f:
             self.__dict__ = json.load(f)
 
+
 def load_kg_form_pkl(file_path, target_relation):
     with open(file_path + 'kg_{}.pkl'.format(target_relation.replace(' ', '_').replace('/', '|')), mode='rb') as fd:
         kg = pkl.load(fd)
-    with open(file_path + 'entity2id_{}.pkl'.format(target_relation.replace(' ', '_').replace('/', '|')), mode='rb') as fd:
+    with open(file_path + 'entity2id_{}.pkl'.format(target_relation.replace(' ', '_').replace('/', '|')),
+              mode='rb') as fd:
         entity2id = pkl.load(fd)
-    with open(file_path + 'relation2id_{}.pkl'.format(target_relation.replace(' ', '_').replace('/', '|')), mode='rb') as fd:
+    with open(file_path + 'relation2id_{}.pkl'.format(target_relation.replace(' ', '_').replace('/', '|')),
+              mode='rb') as fd:
         relation2id = pkl.load(fd)
     return kg, entity2id, relation2id
+
 
 def save_tail(tail2id, flag, file_path=None):
     if file_path is None: return
     with open(os.path.join(file_path, 'tail2id_{}.pkl'.format(flag)), mode='wb') as fw:
         pkl.dump(tail2id, fw)
+
 
 def load_data(data_path):
     data_ori = []
@@ -50,6 +55,7 @@ def load_data(data_path):
             data_inv.append(Triple(t, 'INV' + r, h))
     return data_ori, data_inv
 
+
 def extend_graph(graph_entity, valid_data, test_data):
     data = valid_data.copy()
     data.extend(test_data)
@@ -63,11 +69,13 @@ def extend_graph(graph_entity, valid_data, test_data):
             else:
                 graph_entity[h][t] = [r]
 
+
 def reverse(x2id):
     id2x = {}
     for x in x2id:
         id2x[x2id[x]] = x
     return id2x
+
 
 def build_graph(kg):
     graph = {}
@@ -89,6 +97,7 @@ def build_graph(kg):
                 graph_entity[h][t] = [r]
     return graph, graph_entity
 
+
 def get_head(heads, kg):
     entity2id_head = {}
     id2entity_head = {}
@@ -101,6 +110,7 @@ def get_head(heads, kg):
         entity2id_head[t] = len(entity2id_head)
         id2entity_head[entity2id_head[t]] = t
     return entity2id_head, id2entity_head
+
 
 def get_init_matrix(kg, soft_relations, entity2id, relation2id, triples):
     i_x = []
@@ -157,6 +167,7 @@ def get_init_matrix(kg, soft_relations, entity2id, relation2id, triples):
             records.add(record)
     return torch.LongTensor([i_x, i_y]), torch.FloatTensor(v)
 
+
 def init_matrix(matrix, kg, soft_relations, entity2id, relation2id, relation_tail):
     # print('Processing Matirx(shape={})'.format(matrix.shape))
     for triple in kg:
@@ -180,6 +191,7 @@ def init_matrix(matrix, kg, soft_relations, entity2id, relation2id, relation_tai
         matrix[entity_a][entity_b][relation] = score
         matrix[entity2id[t]][entity_b][len(relation2id)] = 1
 
+
 def init_mask(mask, triples, entity2id, relation2id, relation_tail):
     # print('Processing Mask(shape={})'.format(mask.shape))
     for h, r, t, x_hat, y_hat in triples:
@@ -201,7 +213,9 @@ def init_mask(mask, triples, entity2id, relation2id, relation_tail):
             mask[entity_a_inv][entity_b_inv][relation_inv] = 1
             mask[entity_a_inv][entity_b_inv][relation_inv + len(relation2id)] = 1
 
-def evaluate(id2entity, entity2id, id2relation, relation2id, soft_relations, train_kg, valid_data, test_data, option, target_relation, model_save_path, raw=False):
+
+def evaluate(id2entity, entity2id, id2relation, relation2id, soft_relations, train_kg, valid_data, test_data, option,
+             target_relation, model_save_path, raw=False):
     print('Entity Num:', len(entity2id))
     print('Relation Num:', len(relation2id))
     print('Train KG Size:', len(train_kg))
@@ -211,7 +225,7 @@ def evaluate(id2entity, entity2id, id2relation, relation2id, soft_relations, tra
     extend_graph(graph_entity, valid_data[0], test_data[0])
     extend_graph(graph_entity, valid_data[1], test_data[1])
     model = TELMModel(len(relation2id), option.step, option.length,
-                           option.tau_1, option.tau_2, use_gpu)
+                      option.tau_1, option.tau_2, use_gpu)
 
     model.load_state_dict(torch.load(model_save_path, map_location=torch.device('cpu')))
     # for parameter in model.parameters():
@@ -401,19 +415,27 @@ if __name__ == '__main__':
             if not line: continue
             items = line.strip().split('\t')
             idx, relation = items
-            option = Option('{}/{}-{}-ori'.format(sys.argv[2], sys.argv[3], relation.replace(' ', '_').replace('/', '|')))
+            option = Option(
+                '{}/{}-{}-ori'.format(sys.argv[2], sys.argv[3], relation.replace(' ', '_').replace('/', '|')))
             dataset = Dataset(option.data_dir, option.batch_size, option.target_relation, option.negative_sampling,
                               option)
             soft_relations = dataset.get_soft_relations_test()
             train_kg, entity2id, relation2id = load_kg_form_pkl('{}/'.format(option.exp_dir),
-                                                                option.target_relation.replace(' ', '_').replace('/', '|'))
+                                                                option.target_relation.replace(' ', '_').replace('/',
+                                                                                                                 '|'))
             id2entity = reverse(entity2id)
             id2relation = reverse(relation2id)
             mrr_tail, mrr_head, hit_1_head, hit_1_tail, hit_3_head, hit_3_tail, \
             hit_10_head, hit_10_tail, count_head, count_tail = evaluate(id2entity, entity2id, id2relation,
-                    relation2id, soft_relations, train_kg, valid_data, test_data, option, relation,
-                    '{}/model_{}.pt'.format(option.exp_dir, option.target_relation.replace(' ', '_').replace('/', '|'),
-                    option.target_relation.replace(' ', '_').replace('/', '|')))
+                                                                        relation2id, soft_relations, train_kg,
+                                                                        valid_data, test_data, option, relation,
+                                                                        '{}/model_{}.pt'.format(option.exp_dir,
+                                                                                                option.target_relation.replace(
+                                                                                                    ' ', '_').replace(
+                                                                                                    '/', '|'),
+                                                                                                option.target_relation.replace(
+                                                                                                    ' ', '_').replace(
+                                                                                                    '/', '|')))
             total_mrr_tail += mrr_tail * count_tail / total_size
             total_mrr_head += mrr_head * count_head / total_size
             total_hit_1_head += hit_1_head * count_head / total_size

@@ -10,21 +10,25 @@ from model import TELMModel
 from tqdm import tqdm
 from dataset import Dataset, Triple
 
+
 class Option(object):
     def __init__(self, d):
         self.__dict__ = d
+
     def save(self):
         if not os.path.exists(self.exps_dir):
             os.mkdir(self.exps_dir)
         flag = '-ori'
         if self.inverse:
             flag = '-inv'
-        self.exp_dir = os.path.join(self.exps_dir, self.exp_name + '-' + self.target_relation.replace(' ', '_').replace('/', '|') + flag)
+        self.exp_dir = os.path.join(self.exps_dir, self.exp_name + '-' +
+                                    self.target_relation.replace(' ', '_').replace('/', '|') + flag)
         if not os.path.exists(self.exp_dir):
             os.mkdir(self.exp_dir)
         with open(os.path.join(self.exp_dir, "option.txt"), "w") as f:
             json.dump(self.__dict__, f, indent=1)
         return True
+
 
 def set_seed(option):
     random.seed(option.seed)
@@ -33,14 +37,19 @@ def set_seed(option):
     os.environ['PYTHONHASHSEED'] = str(option.seed)
     if option.use_gpu: torch.cuda.manual_seed_all(option.seed)
 
+
 def save_data(target_relation, kg, entity2id, relation2id, file_path=None):
     print(len(kg))
-    with open(os.path.join(file_path, 'kg_{}.pkl'.format(target_relation.replace(' ', '_').replace('/', '|'))), mode='wb') as fw:
+    with open(os.path.join(file_path, 'kg_{}.pkl'.format(target_relation.replace(' ', '_').replace('/', '|'))),
+              mode='wb') as fw:
         pkl.dump(kg, fw)
-    with open(os.path.join(file_path, 'entity2id_{}.pkl'.format(target_relation.replace(' ', '_').replace('/', '|'))), mode='wb') as fw:
+    with open(os.path.join(file_path, 'entity2id_{}.pkl'.format(target_relation.replace(' ', '_').replace('/', '|'))),
+              mode='wb') as fw:
         pkl.dump(entity2id, fw)
-    with open(os.path.join(file_path, 'relation2id_{}.pkl'.format(target_relation.replace(' ', '_').replace('/', '|'))), mode='wb') as fw:
+    with open(os.path.join(file_path, 'relation2id_{}.pkl'.format(target_relation.replace(' ', '_').replace('/', '|'))),
+              mode='wb') as fw:
         pkl.dump(relation2id, fw)
+
 
 def build_graph(kg, target_relation):
     graph = {}
@@ -63,6 +72,7 @@ def build_graph(kg, target_relation):
                 graph_entity[h][t] = [r]
         if r == target_relation and t not in relation_tail: relation_tail[t] = len(relation_tail)
     return graph, graph_entity, relation_tail
+
 
 def get_init_matrix(kg, soft_relations, entity2id, relation2id, triples):
     i_x = []
@@ -113,6 +123,7 @@ def get_init_matrix(kg, soft_relations, entity2id, relation2id, triples):
             records.add(record)
     return torch.LongTensor([i_x, i_y]), torch.FloatTensor(v)
 
+
 def init_matrix(matrix, kg, soft_relations, entity2id, relation2id, relation_tail):
     # print('Processing Matirx(shape={})'.format(matrix.shape))
     for triple in kg:
@@ -134,6 +145,7 @@ def init_matrix(matrix, kg, soft_relations, entity2id, relation2id, relation_tai
         matrix[entity_a][entity_b][relation] = score
         matrix[entity2id[t]][entity_b][len(relation2id)] = 1
 
+
 def init_mask(mask, triples, entity2id, relation2id, relation_tail):
     # print('Processing Mask(shape={})'.format(mask.shape))
     for h, r, t, x_hat, y_hat in triples:
@@ -154,6 +166,7 @@ def init_mask(mask, triples, entity2id, relation2id, relation_tail):
             mask[entity_a_inv][entity_b_inv][relation_inv] = 1
             mask[entity_a_inv][entity_b_inv][relation_inv + len(relation2id)] = 1
 
+
 def norm(probs):
     sum_all = np.sum(probs)
     probs_new = np.ones_like(probs) / probs.shape[0]
@@ -161,14 +174,17 @@ def norm(probs):
         probs_new = probs / sum_all
     return probs_new
 
+
 def select_random_entity_by_probs(targets, probs):
     selected_entity = np.random.choice(targets, 1, p=probs)
     return selected_entity[0]
+
 
 def softmax(x, axis=None):
     x = x - x.max(axis=axis, keepdims=True)
     y = np.exp(x)
     return y / y.sum(axis=axis, keepdims=True)
+
 
 def load_data(data_path, target_relation):
     data_ori = []
@@ -184,6 +200,7 @@ def load_data(data_path, target_relation):
             data_inv.append(Triple(t, 'INV' + r, h))
     return data_ori, data_inv
 
+
 def extend_graph(graph_entity, valid_data, test_data):
     data = valid_data.copy()
     data.extend(test_data)
@@ -196,6 +213,7 @@ def extend_graph(graph_entity, valid_data, test_data):
                 graph_entity[h][t].append(r)
             else:
                 graph_entity[h][t] = [r]
+
 
 def valid_process(valid_data, valid_data_inv, model, train_kg, flag, soft_relations, entity2id,
                   relation2id, graph_entity, option, raw=False, batch_size=1):
@@ -282,6 +300,7 @@ def valid_process(valid_data, valid_data_inv, model, train_kg, flag, soft_relati
     print('Valid Count:{}\tMrr:{}\tHit@1:{}\tHit@3:{}\tHit@10:{}'.format(count, mrr, hit_1, hit_3, hit_10))
     return mrr, hit_1, hit_3, hit_10
 
+
 def main(dataset, valid_data, test_data, option):
     print('Current Time: {}'.format(time.strftime('%Y-%m-%d %H:%M:%S')))
     print('Modeling target relation: {}'.format(option.target_relation))
@@ -292,7 +311,7 @@ def main(dataset, valid_data, test_data, option):
     extend_graph(graph_entity, valid_data[0], test_data[0])
     extend_graph(graph_entity, valid_data[1], test_data[1])
     model = TELMModel(len(dataset.relation2id), option.step, option.length,
-                          option.tau_1, option.tau_2, option.use_gpu)
+                      option.tau_1, option.tau_2, option.use_gpu)
     if option.use_gpu: model = model.cuda()
     for parameter in model.parameters():
         print(parameter)
@@ -310,8 +329,9 @@ def main(dataset, valid_data, test_data, option):
             triples, entity_tail, flag = batch
             i, v = get_init_matrix(dataset.kg, dataset.soft_relations, dataset.entity2id, dataset.relation2id, triples)
             matrix_all = torch.sparse.FloatTensor(i, v,
-                                                  torch.Size([len(dataset.entity2id) * (2 * len(dataset.relation2id) + 1),
-                                                              len(dataset.entity2id)]))
+                                                  torch.Size(
+                                                      [len(dataset.entity2id) * (2 * len(dataset.relation2id) + 1),
+                                                       len(dataset.entity2id)]))
             matrix = torch.zeros([len(dataset.entity2id), len(entity_tail), 2 * len(dataset.relation2id) + 1])
             mask = torch.zeros([len(dataset.entity2id), len(entity_tail), 2 * len(dataset.relation2id) + 1])
             init_matrix(matrix, dataset.kg, dataset.soft_relations, dataset.entity2id, dataset.relation2id, entity_tail)
@@ -329,8 +349,9 @@ def main(dataset, valid_data, test_data, option):
             loss = 0
             for x, r, y, x_hat, y_hat in tqdm(triples):
                 if option.negative_sampling:
-                    loss += model.negative_loss(torch.unsqueeze(all_states[option.step - 1][dataset.entity2id[x]][entity_tail[y]], dim=0),
-                                       torch.unsqueeze(all_states[option.step - 1][dataset.entity2id[x_hat]][entity_tail[y]], dim=0))
+                    loss += model.negative_loss(
+                        torch.unsqueeze(all_states[option.step - 1][dataset.entity2id[x]][entity_tail[y]], dim=0),
+                        torch.unsqueeze(all_states[option.step - 1][dataset.entity2id[x_hat]][entity_tail[y]], dim=0))
                 else:
                     logit_mask = torch.zeros([len(dataset.entity2id)])
                     if r.startswith('INV'):
@@ -353,10 +374,13 @@ def main(dataset, valid_data, test_data, option):
                 optimizer.zero_grad()
         print('Epoch: {}, Total Loss: {}'.format(e, total_loss))
         if option.early_stop and (e + 1) % 5 == 0:
-            mrr_ori, hit_1_ori, hit_3_ori, hit_10_ori = valid_process(valid_data[0], valid_data[1], model, dataset.kg, False,
-                                                      dataset.soft_relations, dataset.entity2id, dataset.relation2id,
-                                                      graph_entity, option)
-            mrr_inv, hit_1_inv, hit_3_inv, hit_10_inv = valid_process(valid_data[1], valid_data[0], model, dataset.kg, True,
+            mrr_ori, hit_1_ori, hit_3_ori, hit_10_ori = valid_process(valid_data[0], valid_data[1], model, dataset.kg,
+                                                                      False,
+                                                                      dataset.soft_relations, dataset.entity2id,
+                                                                      dataset.relation2id,
+                                                                      graph_entity, option)
+            mrr_inv, hit_1_inv, hit_3_inv, hit_10_inv = valid_process(valid_data[1], valid_data[0], model, dataset.kg,
+                                                                      True,
                                                                       dataset.soft_relations, dataset.entity2id,
                                                                       dataset.relation2id,
                                                                       graph_entity, option)
@@ -372,26 +396,31 @@ def main(dataset, valid_data, test_data, option):
                 max_record['hit_10'] = hit_10
                 max_record['epoch'] = e
                 torch.save(model.state_dict(),
-                           os.path.join(option.exp_dir, 'model_{}.pt'.format(option.target_relation.replace(' ', '_').replace('/', '|'))))
+                           os.path.join(option.exp_dir, 'model_{}.pt'.format(
+                               option.target_relation.replace(' ', '_').replace('/', '|'))))
                 never_saved = False
             print('=' * 100)
             print('Valid Max Score : Epoch:{}\tMrr:{}\tHit@1:{}\tHit@3:{}\tHit@10:{}'.format(max_record['epoch'],
-                                                                            max_record['mrr'], max_record['hit_1'],
-                                                                            max_record['hit_3'], max_record['hit_10']))
+                                                                                             max_record['mrr'],
+                                                                                             max_record['hit_1'],
+                                                                                             max_record['hit_3'],
+                                                                                             max_record['hit_10']))
         if never_saved:
             torch.save(model.state_dict(),
-                       os.path.join(option.exp_dir, 'model_{}.pt'.format(option.target_relation.replace(' ', '_').replace('/', '|'))))
+                       os.path.join(option.exp_dir,
+                                    'model_{}.pt'.format(option.target_relation.replace(' ', '_').replace('/', '|'))))
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Experiment setup")
     parser.add_argument('--data_dir', default=None, type=str)
     parser.add_argument('--exps_dir', default=None, type=str)
     parser.add_argument('--exp_name', default=None, type=str)
-    parser.add_argument('--use_gpu',  default=False, action="store_true")
+    parser.add_argument('--use_gpu', default=False, action="store_true")
     parser.add_argument('--gpu_id', default=4, type=int)
     # model architecture
     parser.add_argument('--length', default=20, type=int)
-    parser.add_argument('--step', default=4, type=int) # step=T+1
+    parser.add_argument('--step', default=4, type=int)  # step=T+1
     parser.add_argument('--tau_1', default=2, type=float)
     parser.add_argument('--tau_2', default=0.2, type=float)
     parser.add_argument('--delta', default=0.5, type=float)

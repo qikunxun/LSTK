@@ -3,7 +3,7 @@ import json
 import sys
 import torch
 import pickle as pkl
-from model import ICLMModel
+from model import TELMModel
 from tqdm import tqdm
 
 beam_size = int(sys.argv[5])
@@ -57,7 +57,7 @@ def transform_score(x, T):
 def analysis(id2relation, relation2id, flag, option, model_save_path):
     thr = 0.5
     T = 4
-    model = ICLMModel(len(relation2id), option.step, option.length, T, 0.2, False)
+    model = TELMModel(len(relation2id), option.step, option.length, T, 0.2, False)
 
     model.load_state_dict(torch.load(model_save_path, map_location=torch.device('cpu')))
     model.eval()
@@ -165,6 +165,10 @@ def analysis(id2relation, relation2id, flag, option, model_save_path):
                 end = ''
                 if t > 0: end = ' ∧ '
                 rules[beam] += output + end
+
+            if not rules[beam].endswith('y)'):
+                output_tmp = rules[beam].split()
+                rules[beam] = rules[beam].replace(output_tmp[-1][:-1], 'y')
         all_rules.append(rules)
 
     ids_sort = torch.argsort(model.weight.squeeze(dim=-1), descending=True)

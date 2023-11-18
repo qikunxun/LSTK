@@ -72,22 +72,22 @@ Path for code: ``src/LSTK-TELM``
 
 The script for both training and evaluation on the HacRED dataset is:
 ```
-bash run_hacred.sh
+sh run_hacred.sh
 ```
 
 The script for both training and evaluation on the HacRED dataset is:
 ```
-bash run_docred.sh
+sh run_docred.sh
 ```
 
 The script for both training and evaluation on the BioRel dataset is:
 ```
-bash run_biorel.sh
+sh run_biorel.sh
 ```
 
 The script for rule extraction is:
 ```
-bash run_rules.sh [dataset]
+sh run_rules.sh [dataset]
 ```
 
 We also provide the runing scripts of baseline methods:

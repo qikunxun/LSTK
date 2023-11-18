@@ -8,7 +8,7 @@
 
 
 ### Datasets
-We use seven datasets in our experiments.
+We use three datasets in our experiments.
 
 | Datasets           | Download Links (original)         |
 |--------------------|-----------------------------------|

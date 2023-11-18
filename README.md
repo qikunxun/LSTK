@@ -129,6 +129,6 @@ $ python process_soft.py
 
 The script for both training and evaluation is:
 ```
-python run.py --data_path [dataset] --num_generated_rules 200 --num_rules_for_test 100 --num_important_rules 0 --prior_weight 0.01 --cuda --predictor_learning_rate 0.1 --generator_epochs 5000 --max_rule_length 2
+python run.py --data_path [dataset] --num_generated_rules 2000 --num_rules_for_test 500 --num_important_rules 0 --prior_weight 0.01 --cuda --predictor_learning_rate 0.1 --generator_epochs 5000 --max_rule_length 2
 ```
 

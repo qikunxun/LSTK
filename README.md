@@ -138,10 +138,13 @@ Please consider citing the following paper if you find our codes helpful. Thank 
 
 ```
 @inproceedings{QiDW23,
-  author    = {Kunxun Qi and Jianfeng Du and Hai Wan},
-  title     = {Learning from Both Structural and Textual Knowledge for Inductive Knowledge Graph Completion},
-  booktitle = {Thirty-seventh Conference on Neural Information Processing Systems},
-  year      = {2023},
-  url       = {https://openreview.net/forum?id=j7x9wW3tCf}
+  author       = {Kunxun Qi and
+                  Jianfeng Du and
+                  Hai Wan},
+  title        = {Learning from Both Structural and Textual Knowledge for Inductive
+                  Knowledge Graph Completion},
+  booktitle    = {NeurIPS},
+  year         = {2023},
+  url          = {http://papers.nips.cc/paper\_files/paper/2023/hash/544242770e8333875325d013328b2079-Abstract-Conference.html},
 }
 ```

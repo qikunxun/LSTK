@@ -99,7 +99,7 @@ Path for code: ``src/LSTK-NeuralLP`` or ``src/LSTK-DRUM``
 
 The training script is:
 ```
-python -u src/main.py --datadir=[dataset]/ --exp_name=[dataset] --num_step 4 --gpu 0 --exps_dir exps --max_epoch 100 --seed 1234
+python -u src/main.py --datadir=[dataset]/ --exp_name=[dataset] --num_step 4 --gpu 0 --exps_dir exps --max_epoch 10 --seed 1234
 ```
 
 The evaluation script is:
